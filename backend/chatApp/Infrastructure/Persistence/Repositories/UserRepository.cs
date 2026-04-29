@@ -25,5 +25,10 @@ namespace Infrastructure.Persistence.Repositories
             _appDbContext.Users.Add(user);
             _appDbContext.SaveChanges();
         }
+
+        public User GetByEmail(string Email)
+        {
+           return _appDbContext.Users.FirstOrDefault(u => u.Email == Email);
+        }
     }
 }

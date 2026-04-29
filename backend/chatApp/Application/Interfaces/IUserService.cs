@@ -4,6 +4,7 @@ namespace Application.Interfaces
 {
     public interface IUserService
     {
-        void Register(RegisterUserDto userDto);
+        void Register(RegisterUserDto dto);
+        string Login(LoginUserDto dto);
     }
 }

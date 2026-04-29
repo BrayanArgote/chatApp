@@ -1,3 +1,4 @@
+using API;
 using Application;
 using Infrastructure;
 
@@ -17,6 +18,9 @@ builder.Services.AddApplication();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// jwt
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +31,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// jwt
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -8,9 +8,11 @@ namespace Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService (IUserRepository userRepository)
+        private readonly IJwtService _jwtService;
+        public UserService (IUserRepository userRepository, IJwtService jwtService)
         {
             _userRepository = userRepository;
+            _jwtService = jwtService;
         }
         public void Register(RegisterUserDto dto)
         {
@@ -29,6 +31,16 @@ namespace Application.Services
             };
 
             _userRepository.Register(user);
+        }
+
+        public string Login(LoginUserDto dto)
+        {
+            var user = _userRepository.GetByEmail(dto.Email);
+
+            if (user == null || user.PasswordHash != dto.Password)
+                throw new Exception("User or password is incorrect");
+
+            return _jwtService.GenerateToken(user);
         }
     }
 }

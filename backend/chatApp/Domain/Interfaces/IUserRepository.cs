@@ -7,5 +7,6 @@ namespace Domain.Interfaces
         bool UserNameExists(string username);
         bool EmailExists(string email);
         void Register(User user);
+        User GetByEmail(string email);
     }
 }

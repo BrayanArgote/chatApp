@@ -2,7 +2,6 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace API.Controllers
 {
     [ApiController]
@@ -28,6 +27,23 @@ namespace API.Controllers
                 return StatusCode(201);
             }
             catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginUserDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var token = _userService.Login(dto);
+                return Ok(new { token = token });
+            }
+            catch(Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
