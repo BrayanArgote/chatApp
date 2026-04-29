@@ -1,0 +1,87 @@
+USE master;
+GO
+
+CREATE DATABASE chatApp_v1;
+GO
+
+USE chatApp_v1;
+GO
+
+CREATE TABLE Users (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Username VARCHAR(30) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    Age INT NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    IsActive BIT DEFAULT 1,
+    IsOnline BIT DEFAULT 0,
+    LastSeen DATETIME2 NULL
+);
+GO
+
+CREATE TABLE Contacts(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UserOwnerId INT NOT NULL,
+    ContactUserId INT NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NULL,
+    FOREIGN KEY (UserOwnerId) REFERENCES Users(Id),
+    FOREIGN KEY (ContactUserId) REFERENCES Users(Id),
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+)
+
+CREATE TABLE RefreshTokens(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id),
+    Token VARCHAR(255) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    ExpiresAt DATETIME2 NOT NULL,
+)
+
+CREATE TABLE PasswordResetsTokens(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id),
+    Token VARCHAR(255) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    ExpiresAt DATETIME2 NOT NULL,
+    IsUsed BIT DEFAULT 0
+)
+
+CREATE TABLE Conversations(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    LastMessageAt DATETIME2 NULL
+)
+GO
+
+CREATE TABLE UsersConversations(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id),
+    ConversationId INT NOT NULL,
+    FOREIGN KEY (ConversationId) REFERENCES Conversations(Id),
+)
+
+CREATE TABLE Messages(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    ConversationId INT NOT NULL,
+    FOREIGN KEY (ConversationId) REFERENCES Conversations(Id),
+    SenderId INT NOT NULL,
+    FOREIGN KEY (SenderId) REFERENCES Users(Id),
+    Content VARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+)
+GO
+
+CREATE TABLE MessageStatus(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    MessageId INT NOT NULL,
+    FOREIGN KEY (MessageId) REFERENCES Messages(Id),
+    UserId INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id),
+    Status TINYINT DEFAULT 1 NOT NULL,        -- 1:Sent, 2:Delivered, 3:Read
+    UpdatedAt DATETIME2 DEFAULT GETDATE(),
+)
